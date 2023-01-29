@@ -1,4 +1,5 @@
 ﻿using EducationApp.Domain.Entities;
+using EducationApp.Persistence.Concrete.Repositories;
 using EducationAPP.Application.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,7 @@ namespace EducationApp.WebAPI.Controllers
     [ApiController]
     public class InMemoryProductController : ControllerBase
     {
-        readonly private IProductWriteRepository _productWriteRepository; 
+        readonly private IProductWriteRepository _productWriteRepository;
         readonly private IProductReadRepository _productReadRepository;
 
         public InMemoryProductController(IProductWriteRepository productWriteRepository, IProductReadRepository productReadRepository)
@@ -17,8 +18,8 @@ namespace EducationApp.WebAPI.Controllers
             _productWriteRepository = productWriteRepository;
             _productReadRepository = productReadRepository;
         }
-        [HttpGet("InMemorySaveProduct")]      
-        public async void Get() 
+        [HttpGet("InMemorySaveProduct")]
+        public async /*void*/Task Get()
         {
             _productWriteRepository.AddRangeAsync(new()
             {
@@ -27,6 +28,24 @@ namespace EducationApp.WebAPI.Controllers
                 new(){Id=Guid.NewGuid(),ProductName="Product 2",Price=300,CreatedDate=DateTime.UtcNow,Stock=130 }
                 });
             await _productWriteRepository.SaveAsync();
+        }
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(string id)
+        {
+            Product product = await _productReadRepository.GetByIdAsync(id);
+            return Ok(product);
+        }
+        [HttpGet("GetProducts")]
+        public async Task<IActionResult> GetAllProduct()
+        {
+            var product = _productReadRepository.GetAll();
+            return Ok(product);
+        }
+        [HttpGet("{ProductName}")]
+        public async Task<IActionResult> gET(string ProductName)
+        {
+            var product = _productReadRepository.GetWhere(x => x.ProductName == ProductName);
+            return Ok(product);
         }
 
     }

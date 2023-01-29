@@ -1,0 +1,2 @@
+15. ders addscoped disposed hatasý çözümü
+Controller da Task olarak Action oluþturulmalý
