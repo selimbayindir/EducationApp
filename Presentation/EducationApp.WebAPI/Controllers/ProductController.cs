@@ -1,4 +1,5 @@
-﻿using EducationAPP.Application.Repositories;
+﻿using EducationApp.Domain.Entities;
+using EducationAPP.Application.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,6 +17,18 @@ namespace EducationApp.WebAPI.Controllers
             _productWriteRepository = productWriteRepository;
             _productReadRepository = productReadRepository;
         }
-       //HttpGet
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(string id)
+        {
+            Product product = await _productReadRepository.GetByIdAsync(id);
+            return Ok(product);
+        }
+        [HttpGet]
+        public async Task GetSaveProduct()
+        {
+            await _productWriteRepository.AddAsync(new() { ProductName = "C Product", Price = 1.500F, CreatedDate = DateTime.UtcNow });
+            await _productWriteRepository.SaveAsync();
+        }
+
     }
 }
